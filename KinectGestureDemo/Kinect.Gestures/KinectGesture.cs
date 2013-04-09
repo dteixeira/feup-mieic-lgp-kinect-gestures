@@ -8,11 +8,11 @@ namespace Kinect.Gestures
     /// </summary>
     public class KinectGesture
     {
+        protected IKinectGestureFrame[] gestureFrames;
+        protected KinectGestureType gestureType;
         private int currentFrameCount;
         private int currentFrameIndex;
-        protected IKinectGestureFrame[] gestureFrames;
         private bool gesturePaused;
-        protected KinectGestureType gestureType;
         private int pausedFrameCount;
 
         /// <summary>

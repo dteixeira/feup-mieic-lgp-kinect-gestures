@@ -8,7 +8,6 @@
             <Ellipse Fill="SkyBlue" Height="20" Width="20" Name="rightHand" Stroke="White" />
             <Ellipse Fill="SkyBlue" Height="20" Width="20" Name="head" Stroke="White" />
         </Canvas>
-        <Label Name="gestureLabel"  Content="" HorizontalAlignment="Left" VerticalAlignment="Top" Width="792" Height="65" FontWeight="Bold" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-
+        <Label Name="gestureLabel"  Content="" HorizontalAlignment="Left" VerticalAlignment="Top" Width="792" Height="65" FontWeight="Bold" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
     </Grid>
 </Window>

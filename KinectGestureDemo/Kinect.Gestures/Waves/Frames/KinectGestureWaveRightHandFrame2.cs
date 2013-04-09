@@ -2,6 +2,9 @@
 
 namespace Kinect.Gestures.Waves.Frames
 {
+    /// <summary>
+    /// Describes the second frame of a right hand wave.
+    /// </summary>
     public class KinectGestureWaveRightHandFrame2 : IKinectGestureFrame
     {
         public KinectGestureResult ProcessFrame(Skeleton skeleton)

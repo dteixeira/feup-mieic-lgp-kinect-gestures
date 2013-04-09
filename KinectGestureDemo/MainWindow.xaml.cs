@@ -1,25 +1,21 @@
-﻿using System;
+﻿using Kinect.Gestures;
+using Kinect.Gestures.Waves;
+using Microsoft.Kinect;
+using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using Microsoft.Kinect;
-using System.Linq;
 using System.Windows.Input;
-using Kinect.Gestures;
-using Kinect.Gestures.Waves;
+using System.Windows.Shapes;
 
 namespace KinectGestureDemo
 {
     public partial class MainWindow : Window
     {
-        //Instantiate the Kinect runtime. Required to initialize the device.
-        //IMPORTANT NOTE: You can pass the device ID here, in case more than one Kinect device is connected.
-        KinectSensor sensor = KinectSensor.KinectSensors[0];
-        Skeleton[] skeletons;
-        KinectGestureController gestureController;
-        int gestureCount = 0;
+        private KinectGestureController gestureController;
+        private int gestureCount = 0;
+        private KinectSensor sensor = KinectSensor.KinectSensors[0];
+        private Skeleton[] skeletons;
 
         public MainWindow()
         {
@@ -32,7 +28,43 @@ namespace KinectGestureDemo
             sensor.SkeletonStream.Enable();
         }
 
-        void MainWindow_KeyUp(object sender, KeyEventArgs e)
+        private void GestureRegognized(object sender, KinectGestureEventArgs e)
+        {
+            // Update the gesture count.
+            this.gestureCount++;
+
+            switch (e.GestureType)
+            {
+                case KinectGestureType.SwipeBottomToTop:
+                    gestureLabel.Content = this.gestureCount + " : Swipe Bottom to Up";
+                    break;
+
+                case KinectGestureType.SwipeLeftToRight:
+                    gestureLabel.Content = this.gestureCount + " : Swipe Left to Right";
+                    break;
+
+                case KinectGestureType.SwipeRightToLeft:
+                    gestureLabel.Content = this.gestureCount + " : Swipe Right to Left";
+                    break;
+
+                case KinectGestureType.SwipeTopToBottom:
+                    gestureLabel.Content = this.gestureCount + " : Swipe Top to Bottom";
+                    break;
+
+                case KinectGestureType.WaveLeftHand:
+                    gestureLabel.Content = this.gestureCount + " : Wave Left Hand";
+                    break;
+
+                case KinectGestureType.WaveRightHand:
+                    gestureLabel.Content = this.gestureCount + " : Wave Right Hand";
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        private void MainWindow_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Up)
             {
@@ -50,7 +82,27 @@ namespace KinectGestureDemo
             }
         }
 
-        void runtime_SkeletonFrameReady(object sender, SkeletonFrameReadyEventArgs e)
+        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            // Setup sensor.
+            this.SetupKinectSensor();
+
+            // Register sensor tilt callback.
+            this.KeyUp += MainWindow_KeyUp;
+
+            // Setup gestures.
+            this.SetupGestureController();
+
+            // Start sensor.
+            this.sensor.Start();
+        }
+
+        private void MainWindow_Unloaded(object sender, RoutedEventArgs e)
+        {
+            sensor.Stop();
+        }
+
+        private void runtime_SkeletonFrameReady(object sender, SkeletonFrameReadyEventArgs e)
         {
             bool receivedData = false;
 
@@ -70,7 +122,6 @@ namespace KinectGestureDemo
 
             if (receivedData)
             {
-
                 Skeleton currentSkeleton = (from s in skeletons
                                             where s.TrackingState == SkeletonTrackingState.Tracked
                                             select s).FirstOrDefault();
@@ -80,11 +131,25 @@ namespace KinectGestureDemo
                     SetEllipsePosition(head, currentSkeleton.Joints[JointType.Head]);
                     SetEllipsePosition(leftHand, currentSkeleton.Joints[JointType.HandLeft]);
                     SetEllipsePosition(rightHand, currentSkeleton.Joints[JointType.HandRight]);
-                    
+
                     // Update gestures.
                     this.gestureController.UpdateGestures(currentSkeleton);
                 }
             }
+        }
+
+        private float ScaleVector(int length, float position)
+        {
+            float value = (((((float)length) / 1f) / 2f) * position) + (length / 2);
+            if (value > length)
+            {
+                return (float)length;
+            }
+            if (value < 0f)
+            {
+                return 0f;
+            }
+            return value;
         }
 
         private void SetEllipsePosition(Ellipse ellipse, Joint joint)
@@ -103,39 +168,7 @@ namespace KinectGestureDemo
             Canvas.SetTop(ellipse, updatedJoint.Position.Y);
         }
 
-        private float ScaleVector(int length, float position)
-        {
-            float value = (((((float)length) / 1f) / 2f) * position) + (length / 2);
-            if (value > length)
-            {
-                return (float)length;
-            }
-            if (value < 0f)
-            {
-                return 0f;
-            }
-            return value;
-        }
-
-        void MainWindow_Unloaded(object sender, RoutedEventArgs e)
-        {
-            sensor.Stop();
-        }
-
-        void SetupKinectSensor()
-        {
-            // Enable near mode.
-            sensor.DepthStream.Range = DepthRange.Near;
-            sensor.SkeletonStream.EnableTrackingInNearRange = true;
-
-            // Enable seated mode.
-            sensor.SkeletonStream.TrackingMode = SkeletonTrackingMode.Seated;
-
-            // Register skeleton frame ready callback.
-            sensor.SkeletonFrameReady += runtime_SkeletonFrameReady;
-        }
-
-        void SetupGestureController()
+        private void SetupGestureController()
         {
             // Create the gesture controller.
             this.gestureController = new KinectGestureController();
@@ -148,49 +181,17 @@ namespace KinectGestureDemo
             this.gestureController.KinectGestureRecognized += new EventHandler<KinectGestureEventArgs>(GestureRegognized);
         }
 
-        private void GestureRegognized(object sender, KinectGestureEventArgs e)
+        private void SetupKinectSensor()
         {
-            // Update the gesture count.
-            this.gestureCount++;
+            // Enable near mode.
+            sensor.DepthStream.Range = DepthRange.Near;
+            sensor.SkeletonStream.EnableTrackingInNearRange = true;
 
-            switch (e.GestureType)
-            {
-                case KinectGestureType.SwipeBottomToTop:
-                    gestureLabel.Content = this.gestureCount + " : Swipe Bottom to Up";
-                    break;
-                case KinectGestureType.SwipeLeftToRight:
-                    gestureLabel.Content = this.gestureCount + " : Swipe Left to Right";
-                    break;
-                case KinectGestureType.SwipeRightToLeft:
-                    gestureLabel.Content = this.gestureCount + " : Swipe Right to Left";
-                    break;
-                case KinectGestureType.SwipeTopToBottom:
-                    gestureLabel.Content = this.gestureCount + " : Swipe Top to Bottom";
-                    break;
-                case KinectGestureType.WaveLeftHand:
-                    gestureLabel.Content = this.gestureCount + " : Wave Left Hand";
-                    break;
-                case KinectGestureType.WaveRightHand:
-                    gestureLabel.Content = this.gestureCount + " : Wave Right Hand";
-                    break;
-                default:
-                    break;
-            }
-        }
+            // Enable seated mode.
+            sensor.SkeletonStream.TrackingMode = SkeletonTrackingMode.Seated;
 
-        void MainWindow_Loaded(object sender, RoutedEventArgs e)
-        {
-            // Setup sensor.
-            this.SetupKinectSensor();
-
-            // Register sensor tilt callback.
-            this.KeyUp += MainWindow_KeyUp;
-
-            // Setup gestures.
-            this.SetupGestureController();
-
-            // Start sensor.
-            this.sensor.Start();
+            // Register skeleton frame ready callback.
+            sensor.SkeletonFrameReady += runtime_SkeletonFrameReady;
         }
     }
 }
