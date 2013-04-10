@@ -127,7 +127,7 @@ namespace KinectGestureDemo
                 where t == JointType.Head || t == JointType.ShoulderCenter || t == JointType.ShoulderLeft ||
                     t == JointType.ShoulderRight || t == JointType.ElbowRight || t == JointType.ElbowLeft ||
                     t == JointType.HandRight || t == JointType.HandLeft || t == JointType.Spine ||
-                    t == JointType.HipCenter
+                    t == JointType.HipCenter || t == JointType.WristLeft || t == JointType.WristRight
                 select j;
             foreach (Joint joint in joints)
             {
