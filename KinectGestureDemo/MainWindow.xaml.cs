@@ -1,6 +1,7 @@
 ﻿using Kinect.Gestures;
 using Kinect.Gestures.Waves;
 using Kinect.Gestures.Swipes;
+using Kinect.Gestures.Circles;
 using Microsoft.Kinect;
 using System;
 using System.Linq;
@@ -197,6 +198,14 @@ namespace KinectGestureDemo
                     gestureLabel.Content = this.gestureCount + " : Wave Right Hand";
                     break;
 
+                case KinectGestureType.CircleRightHand:
+                    gestureLabel.Content = this.gestureCount + " : Circle Right Hand";
+                    break;
+
+                case KinectGestureType.CircleLeftHand:
+                    gestureLabel.Content = this.gestureCount + " : Circle Left Hand";
+                    break;
+
                 default:
                     break;
             }
@@ -335,6 +344,8 @@ namespace KinectGestureDemo
             this.gestureController.AddGesture(new KinectGestureWaveLeftHand());
             this.gestureController.AddGesture(new KinectGestureSwipeRightToLeft());
             this.gestureController.AddGesture(new KinectGestureSwipeLeftToRight());
+            this.gestureController.AddGesture(new KinectGestureCircleRightHand());
+            this.gestureController.AddGesture(new KinectGestureCircleLeftHand());
 
             // Register success callback.
             this.gestureController.KinectGestureRecognized += new EventHandler<KinectGestureEventArgs>(GestureRegognized);

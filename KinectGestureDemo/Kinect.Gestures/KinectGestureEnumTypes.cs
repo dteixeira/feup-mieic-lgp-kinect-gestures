@@ -18,6 +18,8 @@
         None,
         WaveLeftHand,
         WaveRightHand,
+        CircleLeftHand,
+        CircleRightHand,
         SwipeLeftToRight,
         SwipeRightToLeft,
         SwipeBottomToTop,

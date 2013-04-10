@@ -68,6 +68,16 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Kinect.Gestures\Circles\Frames\KinectGestureCircleLeftHandFrame1.cs" />
+    <Compile Include="Kinect.Gestures\Circles\Frames\KinectGestureCircleLeftHandFrame2.cs" />
+    <Compile Include="Kinect.Gestures\Circles\Frames\KinectGestureCircleLeftHandFrame3.cs" />
+    <Compile Include="Kinect.Gestures\Circles\Frames\KinectGestureCircleLeftHandFrame4.cs" />
+    <Compile Include="Kinect.Gestures\Circles\KinectGestureCircleLeftHand.cs" />
+    <Compile Include="Kinect.Gestures\Circles\Frames\KinectGestureCircleRightHandFrame4.cs" />
+    <Compile Include="Kinect.Gestures\Circles\Frames\KinectGestureCircleRightHandFrame3.cs" />
+    <Compile Include="Kinect.Gestures\Circles\Frames\KinectGestureCircleRightHandFrame2.cs" />
+    <Compile Include="Kinect.Gestures\Circles\Frames\KinectGestureCircleRightHandFrame1.cs" />
+    <Compile Include="Kinect.Gestures\Circles\KinectGestureCircleRightHand.cs" />
     <Compile Include="Kinect.Gestures\IKinectGestureFrame.cs" />
     <Compile Include="Kinect.Gestures\KinectGesture.cs" />
     <Compile Include="Kinect.Gestures\KinectGestureController.cs" />
