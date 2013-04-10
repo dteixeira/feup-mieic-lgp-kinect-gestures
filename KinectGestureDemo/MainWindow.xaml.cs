@@ -85,6 +85,13 @@ namespace KinectGestureDemo
             this.DrawBone(skeleton, drawingContext, JointType.Head, JointType.ShoulderCenter);
             this.DrawBone(skeleton, drawingContext, JointType.ShoulderCenter, JointType.ShoulderLeft);
             this.DrawBone(skeleton, drawingContext, JointType.ShoulderCenter, JointType.ShoulderRight);
+            
+            /* Unused joints.
+            this.DrawBone(skeleton, drawingContext, JointType.ShoulderCenter, JointType.Spine);
+            this.DrawBone(skeleton, drawingContext, JointType.Spine, JointType.HipCenter);
+            this.DrawBone(skeleton, drawingContext, JointType.HipCenter, JointType.HipRight);
+            this.DrawBone(skeleton, drawingContext, JointType.HipCenter, JointType.HipLeft);
+             */
 
             // Render left arm.
             this.DrawBone(skeleton, drawingContext, JointType.ShoulderLeft, JointType.ElbowLeft);
@@ -95,6 +102,20 @@ namespace KinectGestureDemo
             this.DrawBone(skeleton, drawingContext, JointType.ShoulderRight, JointType.ElbowRight);
             this.DrawBone(skeleton, drawingContext, JointType.ElbowRight, JointType.WristRight);
             this.DrawBone(skeleton, drawingContext, JointType.WristRight, JointType.HandRight);
+
+            // Render left leg
+            /* Unused joints.
+            this.DrawBone(skeleton, drawingContext, JointType.HipLeft, JointType.KneeLeft);
+            this.DrawBone(skeleton, drawingContext, JointType.KneeLeft, JointType.AnkleLeft);
+            this.DrawBone(skeleton, drawingContext, JointType.AnkleLeft, JointType.FootLeft);
+             */
+
+            // Render right leg
+            /* Unused joints.
+            this.DrawBone(skeleton, drawingContext, JointType.HipRight, JointType.KneeRight);
+            this.DrawBone(skeleton, drawingContext, JointType.KneeRight, JointType.AnkleRight);
+            this.DrawBone(skeleton, drawingContext, JointType.AnkleRight, JointType.FootRight);
+             */
 
             // Render joints.
             foreach (Joint joint in skeleton.Joints)
@@ -116,6 +137,14 @@ namespace KinectGestureDemo
                     // Draw the joint, converting the rendered point position to a screen
                     // position, taking into account the distance between the user and the sensor.
                     drawingContext.DrawEllipse(drawBrush, null, this.SkeletonPointToScreen(joint.Position), JointThickness, JointThickness);
+
+                    // Draw Vidal's face if joint is the head.
+                    if (joint.JointType == JointType.Head)
+                    {
+                        Point head = this.SkeletonPointToScreen(joint.Position);
+                        Canvas.SetLeft(Vidal, head.X + Vidal.Width / 2.0);
+                        Canvas.SetTop(Vidal, head.Y + Vidal.Height / 2.0);
+                    }
                 }
             }
         }
@@ -227,6 +256,7 @@ namespace KinectGestureDemo
         /// <param name="e">Event arguments</param>
         private void MainWindow_Unloaded(object sender, RoutedEventArgs e)
         {
+            sensor.SkeletonStream.Disable();
             sensor.Stop();
         }
 

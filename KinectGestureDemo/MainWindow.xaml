@@ -7,5 +7,8 @@
             <Image Name="Image" Width="640" Height="480"/>
         </Viewbox>
         <Label Name="gestureLabel" Content="" HorizontalAlignment="Center" VerticalAlignment="Top" Width="792" Height="65" FontWeight="Bold" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+        <Canvas Name="Canvas">
+            <Image Source="vidal.png" Stretch="Fill" Name="Vidal" Height="106" Canvas.Left="-142" Canvas.Top="-114" Width="91"/>
+        </Canvas>
     </Grid>
 </Window>
