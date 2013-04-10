@@ -1,4 +1,6 @@
-﻿namespace Kinect.Gestures.Swipes
+﻿using Kinect.Gestures.Swipes.Frames;
+
+namespace Kinect.Gestures.Swipes
 {
     /// <summary>
     /// This classes is used to check for a swipe gesture, from top to bottom.
@@ -21,8 +23,11 @@
         /// <returns>Gesture's frame sequence</returns>
         private IKinectGestureFrame[] CreateGestureFrames()
         {
-            // TODO Finish this.
-            return null;
+            KinectGestureSwipeTopToBottomFrame1 frame1 = new KinectGestureSwipeTopToBottomFrame1();
+            KinectGestureSwipeTopToBottomFrame2 frame2 = new KinectGestureSwipeTopToBottomFrame2();
+            KinectGestureSwipeTopToBottomFrame3 frame3 = new KinectGestureSwipeTopToBottomFrame3();
+            IKinectGestureFrame[] gesture = new IKinectGestureFrame[5] { frame1, frame2, frame3, frame2, frame1 };
+            return gesture;
         }
     }
 }

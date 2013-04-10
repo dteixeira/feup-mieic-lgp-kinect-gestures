@@ -83,6 +83,12 @@
     <Compile Include="Kinect.Gestures\KinectGestureController.cs" />
     <Compile Include="Kinect.Gestures\KinectGestureEnumTypes.cs" />
     <Compile Include="Kinect.Gestures\KinectGestureEventArgs.cs" />
+    <Compile Include="Kinect.Gestures\Swipes\Frames\KinectGestureSwipeTopToBottomFrame1.cs" />
+    <Compile Include="Kinect.Gestures\Swipes\Frames\KinectGestureSwipeTopToBottomFrame2.cs" />
+    <Compile Include="Kinect.Gestures\Swipes\Frames\KinectGestureSwipeTopToBottomFrame3.cs" />
+    <Compile Include="Kinect.Gestures\Swipes\Frames\KinectGestureSwipeBottomToTopFrame1.cs" />
+    <Compile Include="Kinect.Gestures\Swipes\Frames\KinectGestureSwipeBottomToTopFrame2.cs" />
+    <Compile Include="Kinect.Gestures\Swipes\Frames\KinectGestureSwipeBottomToTopFrame3.cs" />
     <Compile Include="Kinect.Gestures\Swipes\Frames\KinectGestureSwipeLeftToRightFrame1.cs" />
     <Compile Include="Kinect.Gestures\Swipes\Frames\KinectGestureSwipeLeftToRightFrame2.cs" />
     <Compile Include="Kinect.Gestures\Swipes\Frames\KinectGestureSwipeLeftToRightFrame3.cs" />

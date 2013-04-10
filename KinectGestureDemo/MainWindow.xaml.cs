@@ -89,7 +89,7 @@ namespace KinectGestureDemo
             this.DrawBone(skeleton, drawingContext, JointType.ShoulderCenter, JointType.ShoulderRight);
             this.DrawBone(skeleton, drawingContext, JointType.ShoulderCenter, JointType.Spine);
             this.DrawBone(skeleton, drawingContext, JointType.Spine, JointType.HipCenter);
-            
+
             /* Unused joints.
             this.DrawBone(skeleton, drawingContext, JointType.ShoulderCenter, JointType.Spine);
             this.DrawBone(skeleton, drawingContext, JointType.Spine, JointType.HipCenter);
@@ -154,8 +154,8 @@ namespace KinectGestureDemo
                     if (joint.JointType == JointType.Head)
                     {
                         Point head = this.SkeletonPointToScreen(joint.Position);
-                        Canvas.SetLeft(Vidal, head.X + Vidal.Width / 2.0);
-                        Canvas.SetTop(Vidal, head.Y + Vidal.Height / 2.0);
+                        Canvas.SetLeft(this.Vidal, head.X + Vidal.Width / 2.0);
+                        Canvas.SetTop(this.Vidal, head.Y + Vidal.Height / 2.0);
                     }
                 }
             }
@@ -328,6 +328,16 @@ namespace KinectGestureDemo
                     // Update gestures.
                     this.gestureController.UpdateGestures(currentSkeleton);
                 }
+                else
+                {
+                    using (DrawingContext dc = this.drawingGroup.Open())
+                    {
+                        // Clear screen.
+                        dc.DrawRectangle(Brushes.Transparent, null, new Rect(0.0, 0.0, RenderWidth, RenderHeight));
+                        Canvas.SetLeft(this.Vidal, -100);
+                        Canvas.SetTop(this.Vidal, -100);
+                    }
+                }
             }
         }
 
@@ -344,6 +354,8 @@ namespace KinectGestureDemo
             this.gestureController.AddGesture(new KinectGestureWaveLeftHand());
             this.gestureController.AddGesture(new KinectGestureSwipeRightToLeft());
             this.gestureController.AddGesture(new KinectGestureSwipeLeftToRight());
+            this.gestureController.AddGesture(new KinectGestureSwipeBottomToTop());
+            this.gestureController.AddGesture(new KinectGestureSwipeTopToBottom());
             this.gestureController.AddGesture(new KinectGestureCircleRightHand());
             this.gestureController.AddGesture(new KinectGestureCircleLeftHand());
 
