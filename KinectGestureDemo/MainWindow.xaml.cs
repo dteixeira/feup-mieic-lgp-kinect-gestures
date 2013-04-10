@@ -1,5 +1,6 @@
 ﻿using Kinect.Gestures;
 using Kinect.Gestures.Waves;
+using Kinect.Gestures.Swipes;
 using Microsoft.Kinect;
 using System;
 using System.Linq;
@@ -85,6 +86,8 @@ namespace KinectGestureDemo
             this.DrawBone(skeleton, drawingContext, JointType.Head, JointType.ShoulderCenter);
             this.DrawBone(skeleton, drawingContext, JointType.ShoulderCenter, JointType.ShoulderLeft);
             this.DrawBone(skeleton, drawingContext, JointType.ShoulderCenter, JointType.ShoulderRight);
+            this.DrawBone(skeleton, drawingContext, JointType.ShoulderCenter, JointType.Spine);
+            this.DrawBone(skeleton, drawingContext, JointType.Spine, JointType.HipCenter);
             
             /* Unused joints.
             this.DrawBone(skeleton, drawingContext, JointType.ShoulderCenter, JointType.Spine);
@@ -118,7 +121,15 @@ namespace KinectGestureDemo
              */
 
             // Render joints.
-            foreach (Joint joint in skeleton.Joints)
+            var joints =
+                from j in skeleton.Joints
+                let t = j.JointType
+                where t == JointType.Head || t == JointType.ShoulderCenter || t == JointType.ShoulderLeft ||
+                    t == JointType.ShoulderRight || t == JointType.ElbowRight || t == JointType.ElbowLeft ||
+                    t == JointType.HandRight || t == JointType.HandLeft || t == JointType.Spine ||
+                    t == JointType.HipCenter
+                select j;
+            foreach (Joint joint in joints)
             {
                 Brush drawBrush = null;
 
@@ -322,6 +333,8 @@ namespace KinectGestureDemo
             // Add new gestures.
             this.gestureController.AddGesture(new KinectGestureWaveRightHand());
             this.gestureController.AddGesture(new KinectGestureWaveLeftHand());
+            this.gestureController.AddGesture(new KinectGestureSwipeRightToLeft());
+            this.gestureController.AddGesture(new KinectGestureSwipeLeftToRight());
 
             // Register success callback.
             this.gestureController.KinectGestureRecognized += new EventHandler<KinectGestureEventArgs>(GestureRegognized);
@@ -337,7 +350,7 @@ namespace KinectGestureDemo
             sensor.SkeletonStream.EnableTrackingInNearRange = true;
 
             // Enable seated mode.
-            sensor.SkeletonStream.TrackingMode = SkeletonTrackingMode.Seated;
+            // sensor.SkeletonStream.TrackingMode = SkeletonTrackingMode.Seated;
 
             // Register skeleton frame ready callback.
             sensor.SkeletonFrameReady += runtime_SkeletonFrameReady;

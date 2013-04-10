@@ -73,6 +73,12 @@
     <Compile Include="Kinect.Gestures\KinectGestureController.cs" />
     <Compile Include="Kinect.Gestures\KinectGestureEnumTypes.cs" />
     <Compile Include="Kinect.Gestures\KinectGestureEventArgs.cs" />
+    <Compile Include="Kinect.Gestures\Swipes\Frames\KinectGestureSwipeLeftToRightFrame1.cs" />
+    <Compile Include="Kinect.Gestures\Swipes\Frames\KinectGestureSwipeLeftToRightFrame2.cs" />
+    <Compile Include="Kinect.Gestures\Swipes\Frames\KinectGestureSwipeLeftToRightFrame3.cs" />
+    <Compile Include="Kinect.Gestures\Swipes\Frames\KinectGestureSwipeRightToLeftFrame3.cs" />
+    <Compile Include="Kinect.Gestures\Swipes\Frames\KinectGestureSwipeRightToLeftFrame2.cs" />
+    <Compile Include="Kinect.Gestures\Swipes\Frames\KinectGestureSwipeRightToLeftFrame1.cs" />
     <Compile Include="Kinect.Gestures\Swipes\KinectGestureSwipeBottomToTop.cs" />
     <Compile Include="Kinect.Gestures\Swipes\KinectGestureSwipeLeftToRight.cs" />
     <Compile Include="Kinect.Gestures\Swipes\KinectGestureSwipeRightToLeft.cs" />
@@ -112,9 +118,7 @@
     </None>
     <AppDesigner Include="Properties\" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Kinect.Gestures\Swipes\Frames\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Resource Include="vidal.png" />
   </ItemGroup>

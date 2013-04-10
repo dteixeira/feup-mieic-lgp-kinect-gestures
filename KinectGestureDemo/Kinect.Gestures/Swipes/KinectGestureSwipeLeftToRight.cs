@@ -1,4 +1,6 @@
-﻿namespace Kinect.Gestures.Swipes
+﻿using Kinect.Gestures.Swipes.Frames;
+
+namespace Kinect.Gestures.Swipes
 {
     /// <summary>
     /// This classes is used to check for a swipe gesture, from left to right.
@@ -21,8 +23,11 @@
         /// <returns>Gesture's frame sequence</returns>
         private IKinectGestureFrame[] CreateGestureFrames()
         {
-            // TODO Finish this.
-            return null;
+            KinectGestureSwipeLeftToRightFrame1 frame1 = new KinectGestureSwipeLeftToRightFrame1();
+            KinectGestureSwipeLeftToRightFrame2 frame2 = new KinectGestureSwipeLeftToRightFrame2();
+            KinectGestureSwipeLeftToRightFrame3 frame3 = new KinectGestureSwipeLeftToRightFrame3();
+            IKinectGestureFrame[] gesture = new IKinectGestureFrame[3] { frame1, frame2, frame3 };
+            return gesture;
         }
     }
 }
