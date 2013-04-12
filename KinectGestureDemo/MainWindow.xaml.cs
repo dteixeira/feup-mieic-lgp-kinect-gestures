@@ -1,4 +1,5 @@
 ﻿using Kinect.Gestures;
+using Kinect.Pointers;
 using Kinect.Gestures.Waves;
 using Kinect.Gestures.Swipes;
 using Kinect.Gestures.Circles;
@@ -9,6 +10,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using Microsoft.Kinect.Toolkit.Interaction;
 
 namespace KinectGestureDemo
 {
@@ -23,10 +25,12 @@ namespace KinectGestureDemo
         private readonly Brush trackedJointBrush = Brushes.SkyBlue;
         private DrawingGroup drawingGroup;
         private KinectGestureController gestureController;
+        private KinectPointerController pointerController;
         private int gestureCount = 0;
         private DrawingImage imageSource;
         private KinectSensor sensor = KinectSensor.KinectSensors[0];
         private Skeleton[] skeletons;
+        private int trackingId = -1;
 
         /// <summary>
         /// Creates the demo window.
@@ -36,7 +40,6 @@ namespace KinectGestureDemo
             InitializeComponent();
             this.Loaded += new RoutedEventHandler(MainWindow_Loaded);
             this.Unloaded += new RoutedEventHandler(MainWindow_Unloaded);
-            sensor.SkeletonStream.Enable();
         }
 
         /// <summary>
@@ -265,8 +268,59 @@ namespace KinectGestureDemo
             // Setup gestures.
             this.SetupGestureController();
 
+            // Setup pointers.
+            this.SetupPointerController();
+
             // Start sensor.
             this.sensor.Start();
+        }
+
+        private void SetupPointerController()
+        {
+            // Create the pointer controller.
+            this.pointerController = new KinectPointerController(this.sensor);
+
+            // Bind callback to update the pointer controller info.
+            this.sensor.AllFramesReady += new EventHandler<AllFramesReadyEventArgs>(this.MainWindow_AllFramesReady);
+
+            // Bind callback on pointer moved.
+            this.pointerController.KinectPointerMoved += new EventHandler<KinectPointerEventArgs>(this.PointerMoved);
+        }
+
+        private void PointerMoved(object sender, KinectPointerEventArgs e)
+        {
+            // Position right hand.
+            if (e.RightHand.HandEventType == InteractionHandEventType.GripRelease)
+            {
+                this.RightHand.Fill = Brushes.SkyBlue;
+                this.RightHand.Stroke = Brushes.DarkBlue;
+            }
+            else if (e.RightHand.HandEventType == InteractionHandEventType.Grip)
+            {
+                this.RightHand.Fill = Brushes.IndianRed;
+                this.RightHand.Stroke = Brushes.DarkRed;
+            }
+            Canvas.SetLeft(this.RightHand, e.RightHand.X * 800);
+            Canvas.SetTop(this.RightHand, e.RightHand.Y * 600);
+
+            // Position left hand.
+            if (e.LeftHand.HandEventType == InteractionHandEventType.GripRelease)
+            {
+                this.LeftHand.Fill = Brushes.SkyBlue;
+                this.LeftHand.Stroke = Brushes.DarkBlue;
+            }
+            else if (e.LeftHand.HandEventType == InteractionHandEventType.Grip)
+            {
+                this.LeftHand.Fill = Brushes.IndianRed;
+                this.LeftHand.Stroke = Brushes.DarkRed;
+            }
+            Canvas.SetLeft(this.LeftHand, e.LeftHand.X * 800);
+            Canvas.SetTop(this.LeftHand, e.LeftHand.Y * 600);
+        }
+
+        private void MainWindow_AllFramesReady(object sender, AllFramesReadyEventArgs e)
+        {
+            this.pointerController.UpdatePointer(e, this.sensor.AccelerometerGetCurrentReading(), this.trackingId);
         }
 
         /// <summary>
@@ -326,6 +380,7 @@ namespace KinectGestureDemo
                     }
 
                     // Update gestures.
+                    this.trackingId = currentSkeleton.TrackingId;
                     this.gestureController.UpdateGestures(currentSkeleton);
                 }
                 else
@@ -369,14 +424,18 @@ namespace KinectGestureDemo
         private void SetupKinectSensor()
         {
             // Enable near mode.
-            sensor.DepthStream.Range = DepthRange.Near;
-            sensor.SkeletonStream.EnableTrackingInNearRange = true;
+            this.sensor.DepthStream.Range = DepthRange.Near;
+            this.sensor.SkeletonStream.EnableTrackingInNearRange = true;
 
             // Enable seated mode.
-            // sensor.SkeletonStream.TrackingMode = SkeletonTrackingMode.Seated;
+            // this.sensor.SkeletonStream.TrackingMode = SkeletonTrackingMode.Seated;
+
+            // Enable needed streams.
+            this.sensor.SkeletonStream.Enable();
+            this.sensor.DepthStream.Enable();
 
             // Register skeleton frame ready callback.
-            sensor.SkeletonFrameReady += runtime_SkeletonFrameReady;
+            this.sensor.SkeletonFrameReady += runtime_SkeletonFrameReady;
         }
 
         /// <summary>

@@ -40,6 +40,14 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\Program Files\Microsoft SDKs\Kinect\v1.0\Assemblies\Microsoft.Kinect.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Kinect.Toolkit, Version=1.7.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Assemblies\Microsoft.Kinect.Toolkit.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Kinect.Toolkit.Interaction, Version=1.7.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Assemblies\Microsoft.Kinect.Toolkit.Interaction.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -68,43 +76,47 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Kinect.Gestures\Circles\Frames\KinectGestureCircleLeftHandFrame1.cs" />
-    <Compile Include="Kinect.Gestures\Circles\Frames\KinectGestureCircleLeftHandFrame2.cs" />
-    <Compile Include="Kinect.Gestures\Circles\Frames\KinectGestureCircleLeftHandFrame3.cs" />
-    <Compile Include="Kinect.Gestures\Circles\Frames\KinectGestureCircleLeftHandFrame4.cs" />
-    <Compile Include="Kinect.Gestures\Circles\KinectGestureCircleLeftHand.cs" />
-    <Compile Include="Kinect.Gestures\Circles\Frames\KinectGestureCircleRightHandFrame4.cs" />
-    <Compile Include="Kinect.Gestures\Circles\Frames\KinectGestureCircleRightHandFrame3.cs" />
-    <Compile Include="Kinect.Gestures\Circles\Frames\KinectGestureCircleRightHandFrame2.cs" />
-    <Compile Include="Kinect.Gestures\Circles\Frames\KinectGestureCircleRightHandFrame1.cs" />
-    <Compile Include="Kinect.Gestures\Circles\KinectGestureCircleRightHand.cs" />
-    <Compile Include="Kinect.Gestures\IKinectGestureFrame.cs" />
-    <Compile Include="Kinect.Gestures\KinectGesture.cs" />
-    <Compile Include="Kinect.Gestures\KinectGestureController.cs" />
-    <Compile Include="Kinect.Gestures\KinectGestureEnumTypes.cs" />
-    <Compile Include="Kinect.Gestures\KinectGestureEventArgs.cs" />
-    <Compile Include="Kinect.Gestures\Swipes\Frames\KinectGestureSwipeTopToBottomFrame1.cs" />
-    <Compile Include="Kinect.Gestures\Swipes\Frames\KinectGestureSwipeTopToBottomFrame2.cs" />
-    <Compile Include="Kinect.Gestures\Swipes\Frames\KinectGestureSwipeTopToBottomFrame3.cs" />
-    <Compile Include="Kinect.Gestures\Swipes\Frames\KinectGestureSwipeBottomToTopFrame1.cs" />
-    <Compile Include="Kinect.Gestures\Swipes\Frames\KinectGestureSwipeBottomToTopFrame2.cs" />
-    <Compile Include="Kinect.Gestures\Swipes\Frames\KinectGestureSwipeBottomToTopFrame3.cs" />
-    <Compile Include="Kinect.Gestures\Swipes\Frames\KinectGestureSwipeLeftToRightFrame1.cs" />
-    <Compile Include="Kinect.Gestures\Swipes\Frames\KinectGestureSwipeLeftToRightFrame2.cs" />
-    <Compile Include="Kinect.Gestures\Swipes\Frames\KinectGestureSwipeLeftToRightFrame3.cs" />
-    <Compile Include="Kinect.Gestures\Swipes\Frames\KinectGestureSwipeRightToLeftFrame3.cs" />
-    <Compile Include="Kinect.Gestures\Swipes\Frames\KinectGestureSwipeRightToLeftFrame2.cs" />
-    <Compile Include="Kinect.Gestures\Swipes\Frames\KinectGestureSwipeRightToLeftFrame1.cs" />
-    <Compile Include="Kinect.Gestures\Swipes\KinectGestureSwipeBottomToTop.cs" />
-    <Compile Include="Kinect.Gestures\Swipes\KinectGestureSwipeLeftToRight.cs" />
-    <Compile Include="Kinect.Gestures\Swipes\KinectGestureSwipeRightToLeft.cs" />
-    <Compile Include="Kinect.Gestures\Swipes\KinectGestureSwipeTopToBottom.cs" />
-    <Compile Include="Kinect.Gestures\Waves\Frames\KinectGestureWaveLeftHandFrame1.cs" />
-    <Compile Include="Kinect.Gestures\Waves\Frames\KinectGestureWaveLeftHandFrame2.cs" />
-    <Compile Include="Kinect.Gestures\Waves\Frames\KinectGestureWaveRightHandFrame1.cs" />
-    <Compile Include="Kinect.Gestures\Waves\Frames\KinectGestureWaveRightHandFrame2.cs" />
-    <Compile Include="Kinect.Gestures\Waves\KinectGestureWaveLeftHand.cs" />
-    <Compile Include="Kinect.Gestures\Waves\KinectGestureWaveRightHand.cs" />
+    <Compile Include="Kinect\Gestures\Circles\Frames\KinectGestureCircleLeftHandFrame1.cs" />
+    <Compile Include="Kinect\Gestures\Circles\Frames\KinectGestureCircleLeftHandFrame2.cs" />
+    <Compile Include="Kinect\Gestures\Circles\Frames\KinectGestureCircleLeftHandFrame3.cs" />
+    <Compile Include="Kinect\Gestures\Circles\Frames\KinectGestureCircleLeftHandFrame4.cs" />
+    <Compile Include="Kinect\Gestures\Circles\KinectGestureCircleLeftHand.cs" />
+    <Compile Include="Kinect\Gestures\Circles\Frames\KinectGestureCircleRightHandFrame4.cs" />
+    <Compile Include="Kinect\Gestures\Circles\Frames\KinectGestureCircleRightHandFrame3.cs" />
+    <Compile Include="Kinect\Gestures\Circles\Frames\KinectGestureCircleRightHandFrame2.cs" />
+    <Compile Include="Kinect\Gestures\Circles\Frames\KinectGestureCircleRightHandFrame1.cs" />
+    <Compile Include="Kinect\Gestures\Circles\KinectGestureCircleRightHand.cs" />
+    <Compile Include="Kinect\Gestures\IKinectGestureFrame.cs" />
+    <Compile Include="Kinect\Gestures\KinectGesture.cs" />
+    <Compile Include="Kinect\Gestures\KinectGestureController.cs" />
+    <Compile Include="Kinect\Gestures\KinectGestureEnumTypes.cs" />
+    <Compile Include="Kinect\Gestures\KinectGestureEventArgs.cs" />
+    <Compile Include="Kinect\Gestures\Swipes\Frames\KinectGestureSwipeTopToBottomFrame1.cs" />
+    <Compile Include="Kinect\Gestures\Swipes\Frames\KinectGestureSwipeTopToBottomFrame2.cs" />
+    <Compile Include="Kinect\Gestures\Swipes\Frames\KinectGestureSwipeTopToBottomFrame3.cs" />
+    <Compile Include="Kinect\Gestures\Swipes\Frames\KinectGestureSwipeBottomToTopFrame1.cs" />
+    <Compile Include="Kinect\Gestures\Swipes\Frames\KinectGestureSwipeBottomToTopFrame2.cs" />
+    <Compile Include="Kinect\Gestures\Swipes\Frames\KinectGestureSwipeBottomToTopFrame3.cs" />
+    <Compile Include="Kinect\Gestures\Swipes\Frames\KinectGestureSwipeLeftToRightFrame1.cs" />
+    <Compile Include="Kinect\Gestures\Swipes\Frames\KinectGestureSwipeLeftToRightFrame2.cs" />
+    <Compile Include="Kinect\Gestures\Swipes\Frames\KinectGestureSwipeLeftToRightFrame3.cs" />
+    <Compile Include="Kinect\Gestures\Swipes\Frames\KinectGestureSwipeRightToLeftFrame3.cs" />
+    <Compile Include="Kinect\Gestures\Swipes\Frames\KinectGestureSwipeRightToLeftFrame2.cs" />
+    <Compile Include="Kinect\Gestures\Swipes\Frames\KinectGestureSwipeRightToLeftFrame1.cs" />
+    <Compile Include="Kinect\Gestures\Swipes\KinectGestureSwipeBottomToTop.cs" />
+    <Compile Include="Kinect\Gestures\Swipes\KinectGestureSwipeLeftToRight.cs" />
+    <Compile Include="Kinect\Gestures\Swipes\KinectGestureSwipeRightToLeft.cs" />
+    <Compile Include="Kinect\Gestures\Swipes\KinectGestureSwipeTopToBottom.cs" />
+    <Compile Include="Kinect\Gestures\Waves\Frames\KinectGestureWaveLeftHandFrame1.cs" />
+    <Compile Include="Kinect\Gestures\Waves\Frames\KinectGestureWaveLeftHandFrame2.cs" />
+    <Compile Include="Kinect\Gestures\Waves\Frames\KinectGestureWaveRightHandFrame1.cs" />
+    <Compile Include="Kinect\Gestures\Waves\Frames\KinectGestureWaveRightHandFrame2.cs" />
+    <Compile Include="Kinect\Gestures\Waves\KinectGestureWaveLeftHand.cs" />
+    <Compile Include="Kinect\Gestures\Waves\KinectGestureWaveRightHand.cs" />
+    <Compile Include="Kinect\Pointers\KinectPointerController.cs" />
+    <Compile Include="Kinect\Pointers\KinectPointerEventArgs.cs" />
+    <Compile Include="Kinect\Pointers\KinectPointerHand.cs" />
+    <Compile Include="Kinect\Pointers\KinectPointerInteractionClient.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -134,7 +146,18 @@
     </None>
     <AppDesigner Include="Properties\" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Assemblies\Microsoft.Kinect.Toolkit.Controls.dll" />
+    <Content Include="Assemblies\Microsoft.Kinect.Toolkit.dll" />
+    <Content Include="Assemblies\Microsoft.Kinect.Toolkit.Fusion.dll" />
+    <Content Include="Assemblies\Microsoft.Kinect.Toolkit.Interaction.dll" />
+    <Content Include="KinectInteraction170_32.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="KinectInteraction170_64.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <ItemGroup>
     <Resource Include="vidal.png" />
   </ItemGroup>
