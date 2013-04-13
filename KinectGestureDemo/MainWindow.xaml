@@ -8,9 +8,9 @@
         </Viewbox>
         <Label Name="gestureLabel" Content="" HorizontalAlignment="Center" VerticalAlignment="Top" Width="792" Height="65" FontWeight="Bold" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
         <Canvas Name="Canvas">
-            <Ellipse x:Name="LeftHand" StrokeThickness="2" Fill="SkyBlue" Height="40" Stroke="DarkBlue" Width="40" Canvas.Left="-206" Canvas.Top="155" RenderTransformOrigin="0.599,-2.949"/>
+            <Ellipse x:Name="LeftHand" StrokeThickness="2" Fill="SkyBlue" Height="40" Stroke="DarkBlue" Width="40" Canvas.Left="-214" Canvas.Top="-49" RenderTransformOrigin="0.599,-2.949"/>
             <Image Source="vidal.png" Stretch="Fill" x:Name="Vidal" Height="106" Canvas.Left="-142" Canvas.Top="-114" Width="91"/>
-            <Ellipse x:Name="RightHand" StrokeThickness="2" Fill="SkyBlue" Height="40" Stroke="DarkBlue" Width="40" Canvas.Left="-206" Canvas.Top="110" RenderTransformOrigin="0.599,-2.949"/>
+            <Ellipse x:Name="RightHand" StrokeThickness="2" Fill="SkyBlue" Height="40" Stroke="DarkBlue" Width="40" Canvas.Left="-214" Canvas.Top="-94" RenderTransformOrigin="0.599,-2.949"/>
         </Canvas>
     </Grid>
 </Window>

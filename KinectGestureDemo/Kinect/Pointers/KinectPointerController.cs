@@ -1,17 +1,22 @@
-﻿using System;
-using Microsoft.Kinect;
+﻿using Microsoft.Kinect;
 using Microsoft.Kinect.Toolkit.Interaction;
+using System;
 
 namespace Kinect.Pointers
 {
+    /// <summary>
+    /// This class controls hand events and interactions.
+    /// </summary>
     public class KinectPointerController
     {
-        private InteractionStream interactionStream;
         private IInteractionClient interactionClient;
+        private InteractionStream interactionStream;
         private int trackingId;
 
-        public event EventHandler<KinectPointerEventArgs> KinectPointerMoved;
-
+        /// <summary>
+        /// Creates a new pointer controller instance.
+        /// </summary>
+        /// <param name="sensor">Kinect sensor instance that will be used.</param>
         public KinectPointerController(KinectSensor sensor)
         {
             this.interactionClient = new KinectPointerInteractionClient();
@@ -20,6 +25,17 @@ namespace Kinect.Pointers
             this.trackingId = 0;
         }
 
+        /// <summary>
+        /// Register client callbacks to invoke when an hand motion is recognized
+        /// </summary>
+        public event EventHandler<KinectPointerEventArgs> KinectPointerMoved;
+
+        /// <summary>
+        /// Updates the hand tracking information.
+        /// </summary>
+        /// <param name="e">AllFramesReady event arguments</param>
+        /// <param name="accelerometerInfo">Accelerometer information of the sensor</param>
+        /// <param name="trackingId">Id of the skeleton that should be tracked in the next frame</param>
         public void UpdatePointer(AllFramesReadyEventArgs e, Vector4 accelerometerInfo, int trackingId)
         {
             // Updates who should the controller be tracking.
@@ -28,7 +44,7 @@ namespace Kinect.Pointers
             // Processes image depth data.
             using (DepthImageFrame depthFrame = e.OpenDepthImageFrame())
             {
-                if(depthFrame == null) 
+                if (depthFrame == null)
                 {
                     // Frame is already too late.
                     return;
@@ -40,7 +56,7 @@ namespace Kinect.Pointers
             // Processes skeleton data.
             using (SkeletonFrame skeletonFrame = e.OpenSkeletonFrame())
             {
-                if(skeletonFrame == null) 
+                if (skeletonFrame == null)
                 {
                     // Frame is already too late.
                     return;
@@ -52,8 +68,20 @@ namespace Kinect.Pointers
             }
         }
 
+        /// <summary>
+        /// Handles InteractionFrameReady events.
+        /// </summary>
+        /// <param name="sender">Object that triggered the event.</param>
+        /// <param name="e">InteractionFrameReady event arguments.</param>
         private void KinectPointer_InteractionFrameReady(object sender, InteractionFrameReadyEventArgs e)
         {
+            if (this.KinectPointerMoved == null)
+            {
+                // No event callback is registered, so no need
+                // to process the event.
+                return;
+            }
+
             InteractionFrame interactionFrame = e.OpenInteractionFrame();
             if (interactionFrame == null)
             {
