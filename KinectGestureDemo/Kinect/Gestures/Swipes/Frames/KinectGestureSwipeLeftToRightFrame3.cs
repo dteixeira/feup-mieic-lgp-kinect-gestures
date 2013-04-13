@@ -3,10 +3,19 @@
 namespace Kinect.Gestures.Swipes.Frames
 {
     /// <summary>
-    /// Describes the first frame of a left hand wave.
+    /// Describes the third frame of a left to right swipe.
     /// </summary>
     public class KinectGestureSwipeLeftToRightFrame3 : IKinectGestureFrame
     {
+        /// <summary>
+        /// Checks if the given skeleton's tracking data matches
+        /// the gesture represented by this frame.
+        /// </summary>
+        /// <param name="skeleton">Skeleton to analize</param>
+        /// <returns>
+        /// Success if the gesture was correct, Waiting if the
+        /// gesture was not quite right, but still possible, Fail otherwise.
+        /// </returns>
         public KinectGestureResult ProcessFrame(Skeleton skeleton)
         {
             // Checks if left hand is below the left shoulder.
@@ -18,7 +27,7 @@ namespace Kinect.Gestures.Swipes.Frames
                     // Checks if the left hand is at the right of the neck.
                     if (skeleton.Joints[JointType.HandLeft].Position.X > skeleton.Joints[JointType.ShoulderCenter].Position.X)
                     {
-                        // The first part of the gesture was completed.
+                        // The third part of the gesture was completed.
                         return KinectGestureResult.Success;
                     }
 

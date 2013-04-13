@@ -3,12 +3,12 @@
 namespace Kinect.Gestures.Circles
 {
     /// <summary>
-    /// This classes is used to check for a circle gesture, with the right hand.
+    /// This classes is used to check for a circle gesture, with the left hand.
     /// </summary>
     public class KinectGestureCircleLeftHand : KinectGesture
     {
         /// <summary>
-        /// Creates a new circle gesture with the right hand.
+        /// Creates a new circle gesture with the left hand.
         /// </summary>
         public KinectGestureCircleLeftHand()
             : base(KinectGestureType.None, null)

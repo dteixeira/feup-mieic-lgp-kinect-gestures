@@ -3,10 +3,19 @@
 namespace Kinect.Gestures.Swipes.Frames
 {
     /// <summary>
-    /// Describes the first frame of a left hand wave.
+    /// Describes the first frame of a right to left swipe.
     /// </summary>
     public class KinectGestureSwipeRightToLeftFrame1 : IKinectGestureFrame
     {
+        /// <summary>
+        /// Checks if the given skeleton's tracking data matches
+        /// the gesture represented by this frame.
+        /// </summary>
+        /// <param name="skeleton">Skeleton to analize</param>
+        /// <returns>
+        /// Success if the gesture was correct, Waiting if the
+        /// gesture was not quite right, but still possible, Fail otherwise.
+        /// </returns>
         public KinectGestureResult ProcessFrame(Skeleton skeleton)
         {
             // Checks if right hand is below the right shoulder.

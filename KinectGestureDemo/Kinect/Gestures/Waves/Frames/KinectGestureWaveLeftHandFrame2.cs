@@ -7,6 +7,15 @@ namespace Kinect.Gestures.Waves.Frames
     /// </summary>
     public class KinectGestureWaveLeftHandFrame2 : IKinectGestureFrame
     {
+        /// <summary>
+        /// Checks if the given skeleton's tracking data matches
+        /// the gesture represented by this frame.
+        /// </summary>
+        /// <param name="skeleton">Skeleton to analize</param>
+        /// <returns>
+        /// Success if the gesture was correct, Waiting if the
+        /// gesture was not quite right, but still possible, Fail otherwise.
+        /// </returns>
         public KinectGestureResult ProcessFrame(Skeleton skeleton)
         {
             // Checks if the left hand is above the left elbow.
@@ -15,7 +24,7 @@ namespace Kinect.Gestures.Waves.Frames
                 // Checks if the left hand is at the right of the left elbow.
                 if (skeleton.Joints[JointType.HandLeft].Position.X > skeleton.Joints[JointType.ElbowLeft].Position.X)
                 {
-                    // The first part of the gesture was completed.
+                    // The second part of the gesture was completed.
                     return KinectGestureResult.Success;
                 }
 
