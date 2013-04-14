@@ -152,15 +152,18 @@
     <Content Include="Assemblies\Microsoft.Kinect.Toolkit.dll" />
     <Content Include="Assemblies\Microsoft.Kinect.Toolkit.Fusion.dll" />
     <Content Include="Assemblies\Microsoft.Kinect.Toolkit.Interaction.dll" />
+    <Resource Include="Images\right_closed.png" />
+    <Resource Include="Images\right_open.png" />
+    <Resource Include="Images\left_closed.png" />
+    <Resource Include="Images\left_open.png" />
+    <Resource Include="Images\check.png" />
     <Content Include="KinectInteraction170_32.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="KinectInteraction170_64.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="vidal.png" />
+    <Resource Include="Images\uncheck.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

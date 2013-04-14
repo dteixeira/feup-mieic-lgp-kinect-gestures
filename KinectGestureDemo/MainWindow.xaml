@@ -3,14 +3,15 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="MainWindow" Height="600" Width="800">
     <Grid>
-        <Viewbox Stretch="Uniform" HorizontalAlignment="Center" Margin="78,70,70,10" Width="640">
-            <Image Name="Image" Width="640" Height="480"/>
-        </Viewbox>
-        <Label Name="gestureLabel" Content="" HorizontalAlignment="Center" VerticalAlignment="Top" Width="792" Height="65" FontWeight="Bold" FontSize="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+        <Image Name="SkeletonImage" Width="800" Grid.ColumnSpan="2" Margin="0,0,0,0"/>
         <Canvas Name="Canvas">
-            <Ellipse x:Name="LeftHand" StrokeThickness="2" Fill="SkyBlue" Height="40" Stroke="DarkBlue" Width="40" Canvas.Left="-214" Canvas.Top="-49" RenderTransformOrigin="0.599,-2.949"/>
-            <Image Source="vidal.png" Stretch="Fill" x:Name="Vidal" Height="106" Canvas.Left="-142" Canvas.Top="-114" Width="91"/>
-            <Ellipse x:Name="RightHand" StrokeThickness="2" Fill="SkyBlue" Height="40" Stroke="DarkBlue" Width="40" Canvas.Left="-214" Canvas.Top="-94" RenderTransformOrigin="0.599,-2.949"/>
+            <Rectangle x:Name="MovableRectangle" Fill="SkyBlue" Visibility="Hidden" Opacity="0.5" Height="150" Stroke="DarkBlue" StrokeThickness="3" Width="150" RenderTransformOrigin="0.6,0.41" Canvas.Left="326" Canvas.Top="236"/>
+            <Image x:Name="LeftOpen" Source="Images/left_open.png" Stretch="Fill" Canvas.Left="-100" Canvas.Top="-100"/>
+            <Image x:Name="LeftClosed" Source="Images/left_closed.png" Stretch="Fill" Canvas.Left="-100" Canvas.Top="-100"/>
+            <Image x:Name="RightOpen" Source="Images/right_open.png" Stretch="Fill" Canvas.Left="-100" Canvas.Top="-100"/>
+            <Image x:Name="RightClosed" Source="Images/right_closed.png" Stretch="Fill" Canvas.Left="-100" Canvas.Top="-100"/>
+            <Image x:Name="DisengageImage" Source="Images/uncheck.png" Stretch="Fill" Width="70" Height="70" Canvas.Left="365"/>
+            <Image x:Name="EngageImage" Source="Images/check.png" Stretch="Fill" Width="70" Height="70" Canvas.Left="365" Visibility="Hidden"/>
         </Canvas>
     </Grid>
 </Window>

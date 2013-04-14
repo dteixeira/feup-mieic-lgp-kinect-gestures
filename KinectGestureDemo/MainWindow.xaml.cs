@@ -1,17 +1,18 @@
 ﻿using Kinect.Gestures;
-using Kinect.Pointers;
-using Kinect.Gestures.Waves;
-using Kinect.Gestures.Swipes;
 using Kinect.Gestures.Circles;
+using Kinect.Gestures.Swipes;
+using Kinect.Gestures.Waves;
+using Kinect.Pointers;
 using Kinect.Sensor;
 using Microsoft.Kinect;
+using Microsoft.Kinect.Toolkit.Interaction;
 using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using Microsoft.Kinect.Toolkit.Interaction;
+using System.Windows.Shapes;
 
 namespace KinectGestureDemo
 {
@@ -24,12 +25,15 @@ namespace KinectGestureDemo
         private readonly Brush inferredJointBrush = Brushes.IndianRed;
         private readonly Pen trackedBonePen = new Pen(Brushes.Indigo, 6);
         private readonly Brush trackedJointBrush = Brushes.SkyBlue;
+        private Image currentLeftHand;
+        private Image currentRightHand;
         private DrawingGroup drawingGroup;
-        private int gestureCount = 0;
+        private Point gripPoint = new Point(0, 0);
+        private bool gripRectangle = false;
         private DrawingImage imageSource;
+        private KinectSensorController sensorController;
         private Skeleton[] skeletons;
         private int trackingId = -1;
-        private KinectSensorController sensorController;
 
         /// <summary>
         /// Creates the demo window.
@@ -92,13 +96,6 @@ namespace KinectGestureDemo
             this.DrawBone(skeleton, drawingContext, JointType.ShoulderCenter, JointType.Spine);
             this.DrawBone(skeleton, drawingContext, JointType.Spine, JointType.HipCenter);
 
-            /* Unused joints.
-            this.DrawBone(skeleton, drawingContext, JointType.ShoulderCenter, JointType.Spine);
-            this.DrawBone(skeleton, drawingContext, JointType.Spine, JointType.HipCenter);
-            this.DrawBone(skeleton, drawingContext, JointType.HipCenter, JointType.HipRight);
-            this.DrawBone(skeleton, drawingContext, JointType.HipCenter, JointType.HipLeft);
-             */
-
             // Render left arm.
             this.DrawBone(skeleton, drawingContext, JointType.ShoulderLeft, JointType.ElbowLeft);
             this.DrawBone(skeleton, drawingContext, JointType.ElbowLeft, JointType.WristLeft);
@@ -108,20 +105,6 @@ namespace KinectGestureDemo
             this.DrawBone(skeleton, drawingContext, JointType.ShoulderRight, JointType.ElbowRight);
             this.DrawBone(skeleton, drawingContext, JointType.ElbowRight, JointType.WristRight);
             this.DrawBone(skeleton, drawingContext, JointType.WristRight, JointType.HandRight);
-
-            // Render left leg
-            /* Unused joints.
-            this.DrawBone(skeleton, drawingContext, JointType.HipLeft, JointType.KneeLeft);
-            this.DrawBone(skeleton, drawingContext, JointType.KneeLeft, JointType.AnkleLeft);
-            this.DrawBone(skeleton, drawingContext, JointType.AnkleLeft, JointType.FootLeft);
-             */
-
-            // Render right leg
-            /* Unused joints.
-            this.DrawBone(skeleton, drawingContext, JointType.HipRight, JointType.KneeRight);
-            this.DrawBone(skeleton, drawingContext, JointType.KneeRight, JointType.AnkleRight);
-            this.DrawBone(skeleton, drawingContext, JointType.AnkleRight, JointType.FootRight);
-             */
 
             // Render joints.
             var joints =
@@ -151,14 +134,6 @@ namespace KinectGestureDemo
                     // Draw the joint, converting the rendered point position to a screen
                     // position, taking into account the distance between the user and the sensor.
                     drawingContext.DrawEllipse(drawBrush, null, this.SkeletonPointToScreen(joint.Position), JointThickness, JointThickness);
-
-                    // Draw Vidal's face if joint is the head.
-                    if (joint.JointType == JointType.Head)
-                    {
-                        Point head = this.SkeletonPointToScreen(joint.Position);
-                        Canvas.SetLeft(this.Vidal, head.X + Vidal.Width / 2.0);
-                        Canvas.SetTop(this.Vidal, head.Y + Vidal.Height / 2.0);
-                    }
                 }
             }
         }
@@ -170,57 +145,61 @@ namespace KinectGestureDemo
         /// <param name="e">Event arguments</param>
         private void GestureRegognized(object sender, KinectGestureEventArgs e)
         {
-            // Update the gesture count.
-            this.gestureCount++;
+            Console.WriteLine(e.GestureType);
 
-            // Do a different action depending on gesture type.
-            switch (e.GestureType)
+            // Engage new skeleton.
+            if (e.GestureType == KinectGestureType.WaveRightHand && this.trackingId == -1)
             {
-                case KinectGestureType.SwipeBottomToTop:
-                    gestureLabel.Content = this.gestureCount + " : Swipe Bottom to Up";
-                    break;
+                this.trackingId = e.TrackingId;
+                this.sensorController.StartTrackingSkeleton(this.trackingId);
+                this.EngageImage.Visibility = Visibility.Visible;
+                this.DisengageImage.Visibility = Visibility.Hidden;
+                this.currentLeftHand = LeftOpen;
+                this.currentRightHand = RightOpen;
+            }
 
-                case KinectGestureType.SwipeLeftToRight:
-                    gestureLabel.Content = this.gestureCount + " : Swipe Left to Right";
-                    break;
+            // Disengage previous skeleton.
+            else if (e.GestureType == KinectGestureType.WaveLeftHand && this.trackingId == e.TrackingId)
+            {
+                this.trackingId = -1;
+                this.sensorController.StopTrackingSkeleton();
+                this.DisengageImage.Visibility = Visibility.Visible;
+                this.EngageImage.Visibility = Visibility.Hidden;
+            }
+            else if (this.trackingId != -1)
+            {
+                // Process event modifications.
+                switch (e.GestureType)
+                {
+                    case KinectGestureType.SwipeRightToLeft:
+                        this.MovableRectangle.Visibility = System.Windows.Visibility.Hidden;
+                        this.gripRectangle = false;
+                        break;
 
-                case KinectGestureType.SwipeRightToLeft:
-                    gestureLabel.Content = this.gestureCount + " : Swipe Right to Left";
-                    break;
+                    case KinectGestureType.SwipeLeftToRight:
+                        this.MovableRectangle.Visibility = System.Windows.Visibility.Hidden;
+                        this.gripRectangle = false;
+                        break;
 
-                case KinectGestureType.SwipeTopToBottom:
-                    gestureLabel.Content = this.gestureCount + " : Swipe Top to Bottom";
-                    break;
+                    case KinectGestureType.CircleLeftHand:
+                        this.MovableRectangle.Visibility = System.Windows.Visibility.Visible;
+                        this.MovableRectangle.Fill = Brushes.IndianRed;
+                        this.MovableRectangle.Stroke = Brushes.DarkRed;
+                        Canvas.SetLeft(this.MovableRectangle, 326);
+                        Canvas.SetTop(this.MovableRectangle, 236);
+                        break;
 
-                case KinectGestureType.WaveLeftHand:
-                    gestureLabel.Content = this.gestureCount + " : Wave Left Hand";
-                    break;
+                    case KinectGestureType.CircleRightHand:
+                        this.MovableRectangle.Visibility = System.Windows.Visibility.Visible;
+                        this.MovableRectangle.Fill = Brushes.SkyBlue;
+                        this.MovableRectangle.Stroke = Brushes.DarkBlue;
+                        Canvas.SetLeft(this.MovableRectangle, 326);
+                        Canvas.SetTop(this.MovableRectangle, 236);
+                        break;
 
-                case KinectGestureType.WaveRightHand:
-                    if (this.trackingId == -1)
-                    {
-                        gestureLabel.Content = this.gestureCount + " : Wave Right Hand | ENGAGE";
-                        this.trackingId = e.TrackingId;
-                        this.sensorController.StartTrackingSkeleton(this.trackingId);
-                    }
-                    else
-                    {
-                        gestureLabel.Content = this.gestureCount + " : Wave Right Hand | DISENGAGE";
-                        this.trackingId = -1;
-                        this.sensorController.StopTrackingSkeleton();
-                    }
-                    break;
-
-                case KinectGestureType.CircleRightHand:
-                    gestureLabel.Content = this.gestureCount + " : Circle Right Hand";
-                    break;
-
-                case KinectGestureType.CircleLeftHand:
-                    gestureLabel.Content = this.gestureCount + " : Circle Left Hand";
-                    break;
-
-                default:
-                    break;
+                    default:
+                        break;
+                }
             }
         }
 
@@ -267,7 +246,7 @@ namespace KinectGestureDemo
             this.imageSource = new DrawingImage(this.drawingGroup);
 
             // Display the drawing using our image control
-            Image.Source = this.imageSource;
+            this.SkeletonImage.Source = this.imageSource;
 
             // Register sensor tilt callback.
             this.KeyUp += MainWindow_KeyUp;
@@ -299,37 +278,6 @@ namespace KinectGestureDemo
             this.sensorController.StartSensor();
         }
 
-        private void PointerMoved(object sender, KinectPointerEventArgs e)
-        {
-            // Position right hand.
-            if (e.RightHand.HandEventType == InteractionHandEventType.GripRelease)
-            {
-                this.RightHand.Fill = Brushes.SkyBlue;
-                this.RightHand.Stroke = Brushes.DarkBlue;
-            }
-            else if (e.RightHand.HandEventType == InteractionHandEventType.Grip)
-            {
-                this.RightHand.Fill = Brushes.IndianRed;
-                this.RightHand.Stroke = Brushes.DarkRed;
-            }
-            Canvas.SetLeft(this.RightHand, e.RightHand.X * 800);
-            Canvas.SetTop(this.RightHand, e.RightHand.Y * 600);
-
-            // Position left hand.
-            if (e.LeftHand.HandEventType == InteractionHandEventType.GripRelease)
-            {
-                this.LeftHand.Fill = Brushes.SkyBlue;
-                this.LeftHand.Stroke = Brushes.DarkBlue;
-            }
-            else if (e.LeftHand.HandEventType == InteractionHandEventType.Grip)
-            {
-                this.LeftHand.Fill = Brushes.IndianRed;
-                this.LeftHand.Stroke = Brushes.DarkRed;
-            }
-            Canvas.SetLeft(this.LeftHand, e.LeftHand.X * 800);
-            Canvas.SetTop(this.LeftHand, e.LeftHand.Y * 600);
-        }
-
         /// <summary>
         /// Callback for the Unloaded event. Stops the sensor.
         /// </summary>
@@ -338,6 +286,61 @@ namespace KinectGestureDemo
         private void MainWindow_Unloaded(object sender, RoutedEventArgs e)
         {
             this.sensorController.StopSensor();
+        }
+
+        /// <summary>
+        /// Callback called when the pointers move or change state.
+        /// </summary>
+        /// <param name="sender">Object that triggered the event</param>
+        /// <param name="e">Pointer change arguments</param>
+        private void PointerMoved(object sender, KinectPointerEventArgs e)
+        {
+            // Position right hand.
+            if (e.RightHand.HandEventType == InteractionHandEventType.GripRelease)
+            {
+                this.currentRightHand = RightOpen;
+                Canvas.SetLeft(this.RightClosed, -100);
+                Canvas.SetTop(this.RightClosed, -100);
+                this.gripRectangle = false;
+            }
+            else if (e.RightHand.HandEventType == InteractionHandEventType.Grip)
+            {
+                this.currentRightHand = RightClosed;
+                Canvas.SetLeft(this.RightOpen, -100);
+                Canvas.SetTop(this.RightOpen, -100);
+
+                Rectangle rect = this.Canvas.InputHitTest(new Point(e.RightHand.X * 800, e.RightHand.Y * 600)) as Rectangle;
+                if (rect != null)
+                {
+                    gripPoint = this.Canvas.TranslatePoint(new Point(e.RightHand.X * 800, e.RightHand.Y * 600), this.MovableRectangle);
+                    this.gripRectangle = true;
+                }
+            }
+            Canvas.SetLeft(this.currentRightHand, e.RightHand.X * 800);
+            Canvas.SetTop(this.currentRightHand, e.RightHand.Y * 600);
+
+            // Position left hand.
+            if (e.LeftHand.HandEventType == InteractionHandEventType.GripRelease)
+            {
+                this.currentLeftHand = LeftOpen;
+                Canvas.SetLeft(this.LeftClosed, -100);
+                Canvas.SetTop(this.LeftClosed, -100);
+            }
+            else if (e.LeftHand.HandEventType == InteractionHandEventType.Grip)
+            {
+                this.currentLeftHand = LeftClosed;
+                Canvas.SetLeft(this.LeftOpen, -100);
+                Canvas.SetTop(this.LeftOpen, -100);
+            }
+            Canvas.SetLeft(this.currentLeftHand, e.LeftHand.X * 800);
+            Canvas.SetTop(this.currentLeftHand, e.LeftHand.Y * 600);
+
+            // Move rectangle if applied.
+            if (this.gripRectangle)
+            {
+                Canvas.SetLeft(this.MovableRectangle, e.RightHand.X * 800 - gripPoint.X);
+                Canvas.SetTop(this.MovableRectangle, e.RightHand.Y * 600 - gripPoint.Y);
+            }
         }
 
         /// <summary>
@@ -366,40 +369,63 @@ namespace KinectGestureDemo
 
             if (receivedData)
             {
-                // Gets the first tracked skeleton.
-                Skeleton currentSkeleton = (from s in skeletons
-                                            where s.TrackingState == SkeletonTrackingState.Tracked
-                                            select s).FirstOrDefault();
-
-                if (currentSkeleton != null)
+                using (DrawingContext dc = this.drawingGroup.Open())
                 {
-                    using (DrawingContext dc = this.drawingGroup.Open())
-                    {
-                        // Draw a transparent background to set the render size.
-                        dc.DrawRectangle(Brushes.Transparent, null, new Rect(0.0, 0.0, RenderWidth, RenderHeight));
+                    // Clear screen.
+                    dc.DrawRectangle(Brushes.Transparent, null, new Rect(0.0, 0.0, RenderWidth, RenderHeight));
 
-                        // Draw the skeleton bones and joints.
-                        this.DrawBonesAndJoints(currentSkeleton, dc);
-
-                        // prevent drawing outside of our render area
-                        this.drawingGroup.ClipGeometry = new RectangleGeometry(new Rect(0.0, 0.0, RenderWidth, RenderHeight));
-                    }
-                }
-                else
-                {
-                    using (DrawingContext dc = this.drawingGroup.Open())
+                    // No skeleton engaged, draw all.
+                    if (this.trackingId == -1)
                     {
-                        // Clear screen.
-                        dc.DrawRectangle(Brushes.Transparent, null, new Rect(0.0, 0.0, RenderWidth, RenderHeight));
-                        Canvas.SetLeft(this.Vidal, -100);
-                        Canvas.SetTop(this.Vidal, -100);
+                        // Remove hands from view.
+                        Canvas.SetLeft(this.LeftClosed, -100);
+                        Canvas.SetTop(this.LeftClosed, -100);
+                        Canvas.SetLeft(this.LeftOpen, -100);
+                        Canvas.SetTop(this.LeftOpen, -100);
+                        Canvas.SetLeft(this.RightClosed, -100);
+                        Canvas.SetTop(this.RightClosed, -100);
+                        Canvas.SetLeft(this.RightOpen, -100);
+                        Canvas.SetTop(this.RightOpen, -100);
+
+                        foreach (Skeleton skeleton in skeletons)
+                        {
+                            // Draw only fully tracked skeletons.
+                            if (skeleton.TrackingState == SkeletonTrackingState.Tracked)
+                            {
+                                // Draw the skeleton bones and joints.
+                                this.DrawBonesAndJoints(skeleton, dc);
+                            }
+                        }
                     }
+
+                    // There is a skeleton engaged.
+                    else
+                    {
+                        Skeleton skeleton =
+                            (from s in skeletons
+                             where s.TrackingState == SkeletonTrackingState.Tracked && s.TrackingId == this.trackingId
+                             select s).FirstOrDefault();
+
+                        // Skeleton disengaged by exiting the area.
+                        if (skeleton == null)
+                        {
+                            this.GestureRegognized(this, new KinectGestureEventArgs(KinectGestureType.WaveLeftHand, this.trackingId));
+                        }
+                        else
+                        {
+                            // Draw the skeleton bones and joints.
+                            this.DrawBonesAndJoints(skeleton, dc);
+                        }
+                    }
+
+                    // Prevent drawing outside of our render area.
+                    this.drawingGroup.ClipGeometry = new RectangleGeometry(new Rect(0.0, 0.0, RenderWidth, RenderHeight));
                 }
             }
         }
 
         /// <summary>
-        /// Maps a SkeletonPoint to lie within our render space and converts to Point
+        /// Maps a SkeletonPoint to lie within our render space and converts to Point.
         /// </summary>
         /// <param name="skelpoint">point to map</param>
         /// <returns>mapped point</returns>
