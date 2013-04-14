@@ -3,6 +3,7 @@ using Kinect.Pointers;
 using Kinect.Gestures.Waves;
 using Kinect.Gestures.Swipes;
 using Kinect.Gestures.Circles;
+using Kinect.Sensor;
 using Microsoft.Kinect;
 using System;
 using System.Linq;
@@ -24,13 +25,11 @@ namespace KinectGestureDemo
         private readonly Pen trackedBonePen = new Pen(Brushes.Indigo, 6);
         private readonly Brush trackedJointBrush = Brushes.SkyBlue;
         private DrawingGroup drawingGroup;
-        private KinectGestureController gestureController;
-        private KinectPointerController pointerController;
         private int gestureCount = 0;
         private DrawingImage imageSource;
-        private KinectSensor sensor = KinectSensor.KinectSensors[0];
         private Skeleton[] skeletons;
         private int trackingId = -1;
+        private KinectSensorController sensorController;
 
         /// <summary>
         /// Creates the demo window.
@@ -198,7 +197,18 @@ namespace KinectGestureDemo
                     break;
 
                 case KinectGestureType.WaveRightHand:
-                    gestureLabel.Content = this.gestureCount + " : Wave Right Hand";
+                    if (this.trackingId == -1)
+                    {
+                        gestureLabel.Content = this.gestureCount + " : Wave Right Hand | ENGAGE";
+                        this.trackingId = e.TrackingId;
+                        this.sensorController.StartTrackingSkeleton(this.trackingId);
+                    }
+                    else
+                    {
+                        gestureLabel.Content = this.gestureCount + " : Wave Right Hand | DISENGAGE";
+                        this.trackingId = -1;
+                        this.sensorController.StopTrackingSkeleton();
+                    }
                     break;
 
                 case KinectGestureType.CircleRightHand:
@@ -225,9 +235,9 @@ namespace KinectGestureDemo
             // max tilt, increase its tilt by 5 degrees.
             if (e.Key == Key.Up)
             {
-                if (sensor.ElevationAngle <= 22)
+                if (this.sensorController.Sensor.ElevationAngle <= 22)
                 {
-                    sensor.ElevationAngle += 5;
+                    this.sensorController.Sensor.ElevationAngle += 5;
                 }
             }
 
@@ -235,9 +245,9 @@ namespace KinectGestureDemo
             // minimum tilt, decrease its tilt by 5 degrees.
             else if (e.Key == Key.Down)
             {
-                if (sensor.ElevationAngle >= -22)
+                if (this.sensorController.Sensor.ElevationAngle >= -22)
                 {
-                    sensor.ElevationAngle -= 5;
+                    this.sensorController.Sensor.ElevationAngle -= 5;
                 }
             }
         }
@@ -259,32 +269,34 @@ namespace KinectGestureDemo
             // Display the drawing using our image control
             Image.Source = this.imageSource;
 
-            // Setup sensor.
-            this.SetupKinectSensor();
-
             // Register sensor tilt callback.
             this.KeyUp += MainWindow_KeyUp;
 
+            // Setup sensor.
+            this.sensorController = new KinectSensorController();
+            if (!this.sensorController.FoundSensor())
+            {
+                this.Close();
+                return;
+            }
+
             // Setup gestures.
-            this.SetupGestureController();
+            this.sensorController.Gestures.AddGesture(new KinectGestureWaveRightHand());
+            this.sensorController.Gestures.AddGesture(new KinectGestureWaveLeftHand());
+            this.sensorController.Gestures.AddGesture(new KinectGestureSwipeRightToLeft());
+            this.sensorController.Gestures.AddGesture(new KinectGestureSwipeLeftToRight());
+            this.sensorController.Gestures.AddGesture(new KinectGestureCircleRightHand());
+            this.sensorController.Gestures.AddGesture(new KinectGestureCircleLeftHand());
+            this.sensorController.Gestures.KinectGestureRecognized += new EventHandler<KinectGestureEventArgs>(GestureRegognized);
 
-            // Setup pointers.
-            this.SetupPointerController();
+            // Setup pointer controller.
+            this.sensorController.Pointers.KinectPointerMoved += new EventHandler<KinectPointerEventArgs>(this.PointerMoved);
 
-            // Start sensor.
-            this.sensor.Start();
-        }
+            // Register skeleton frame ready callback;
+            this.sensorController.Sensor.SkeletonFrameReady += new EventHandler<SkeletonFrameReadyEventArgs>(runtime_SkeletonFrameReady);
 
-        private void SetupPointerController()
-        {
-            // Create the pointer controller.
-            this.pointerController = new KinectPointerController(this.sensor);
-
-            // Bind callback to update the pointer controller info.
-            this.sensor.AllFramesReady += new EventHandler<AllFramesReadyEventArgs>(this.MainWindow_AllFramesReady);
-
-            // Bind callback on pointer moved.
-            this.pointerController.KinectPointerMoved += new EventHandler<KinectPointerEventArgs>(this.PointerMoved);
+            // Start the sensor.
+            this.sensorController.StartSensor();
         }
 
         private void PointerMoved(object sender, KinectPointerEventArgs e)
@@ -318,11 +330,6 @@ namespace KinectGestureDemo
             Canvas.SetTop(this.LeftHand, e.LeftHand.Y * 600);
         }
 
-        private void MainWindow_AllFramesReady(object sender, AllFramesReadyEventArgs e)
-        {
-            this.pointerController.UpdatePointer(e, this.sensor.AccelerometerGetCurrentReading(), this.trackingId);
-        }
-
         /// <summary>
         /// Callback for the Unloaded event. Stops the sensor.
         /// </summary>
@@ -330,8 +337,7 @@ namespace KinectGestureDemo
         /// <param name="e">Event arguments</param>
         private void MainWindow_Unloaded(object sender, RoutedEventArgs e)
         {
-            sensor.SkeletonStream.Disable();
-            sensor.Stop();
+            this.sensorController.StopSensor();
         }
 
         /// <summary>
@@ -378,10 +384,6 @@ namespace KinectGestureDemo
                         // prevent drawing outside of our render area
                         this.drawingGroup.ClipGeometry = new RectangleGeometry(new Rect(0.0, 0.0, RenderWidth, RenderHeight));
                     }
-
-                    // Update gestures.
-                    this.trackingId = currentSkeleton.TrackingId;
-                    this.gestureController.UpdateGestures(currentSkeleton);
                 }
                 else
                 {
@@ -397,48 +399,6 @@ namespace KinectGestureDemo
         }
 
         /// <summary>
-        /// Setup the gesture controller and add relevant gestures.
-        /// </summary>
-        private void SetupGestureController()
-        {
-            // Create the gesture controller.
-            this.gestureController = new KinectGestureController();
-
-            // Add new gestures.
-            this.gestureController.AddGesture(new KinectGestureWaveRightHand());
-            this.gestureController.AddGesture(new KinectGestureWaveLeftHand());
-            this.gestureController.AddGesture(new KinectGestureSwipeRightToLeft());
-            this.gestureController.AddGesture(new KinectGestureSwipeLeftToRight());
-            this.gestureController.AddGesture(new KinectGestureSwipeBottomToTop());
-            this.gestureController.AddGesture(new KinectGestureSwipeTopToBottom());
-            this.gestureController.AddGesture(new KinectGestureCircleRightHand());
-            this.gestureController.AddGesture(new KinectGestureCircleLeftHand());
-
-            // Register success callback.
-            this.gestureController.KinectGestureRecognized += new EventHandler<KinectGestureEventArgs>(GestureRegognized);
-        }
-
-        /// <summary>
-        /// Setup the Kinect sensor.
-        /// </summary>
-        private void SetupKinectSensor()
-        {
-            // Enable near mode.
-            this.sensor.DepthStream.Range = DepthRange.Near;
-            this.sensor.SkeletonStream.EnableTrackingInNearRange = true;
-
-            // Enable seated mode.
-            // this.sensor.SkeletonStream.TrackingMode = SkeletonTrackingMode.Seated;
-
-            // Enable needed streams.
-            this.sensor.SkeletonStream.Enable();
-            this.sensor.DepthStream.Enable();
-
-            // Register skeleton frame ready callback.
-            this.sensor.SkeletonFrameReady += runtime_SkeletonFrameReady;
-        }
-
-        /// <summary>
         /// Maps a SkeletonPoint to lie within our render space and converts to Point
         /// </summary>
         /// <param name="skelpoint">point to map</param>
@@ -446,7 +406,7 @@ namespace KinectGestureDemo
         private Point SkeletonPointToScreen(SkeletonPoint skelpoint)
         {
             // Convert point to depth space.
-            DepthImagePoint depthPoint = this.sensor.CoordinateMapper.MapSkeletonPointToDepthPoint(skelpoint, DepthImageFormat.Resolution640x480Fps30);
+            DepthImagePoint depthPoint = this.sensorController.Sensor.CoordinateMapper.MapSkeletonPointToDepthPoint(skelpoint, DepthImageFormat.Resolution640x480Fps30);
             return new Point(depthPoint.X, depthPoint.Y);
         }
     }
