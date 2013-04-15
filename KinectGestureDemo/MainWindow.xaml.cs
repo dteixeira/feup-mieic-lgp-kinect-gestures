@@ -145,8 +145,6 @@ namespace KinectGestureDemo
         /// <param name="e">Event arguments</param>
         private void GestureRegognized(object sender, KinectGestureEventArgs e)
         {
-            Console.WriteLine(e.GestureType);
-
             // Engage new skeleton.
             if (e.GestureType == KinectGestureType.WaveRightHand && this.trackingId == -1)
             {

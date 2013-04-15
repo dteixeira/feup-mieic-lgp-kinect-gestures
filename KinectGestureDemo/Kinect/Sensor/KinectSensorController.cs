@@ -132,15 +132,24 @@ namespace Kinect.Sensor
                 Skeleton[] skeletons = new Skeleton[skeletonFrame.SkeletonArrayLength];
                 skeletonFrame.CopySkeletonDataTo(skeletons);
 
-                // Process all tracked skeletons.
+                // Process the closest tracking skeleton.
                 if (this.trackingId == -1)
                 {
+                    double closestDistance = double.MaxValue;
+                    Skeleton closestSkeleton = null;
+
                     foreach (Skeleton skeleton in skeletons)
                     {
-                        if (skeleton.TrackingState == SkeletonTrackingState.Tracked)
+                        if (skeleton.TrackingState == SkeletonTrackingState.Tracked && skeleton.Position.Z < closestDistance)
                         {
-                            this.gestureController.UpdateGestures(skeleton);
+                            closestDistance = skeleton.Position.Z;
+                            closestSkeleton = skeleton;
                         }
+                    }
+
+                    if (closestSkeleton != null)
+                    {
+                        this.gestureController.UpdateGestures(closestSkeleton);
                     }
                 }
 
