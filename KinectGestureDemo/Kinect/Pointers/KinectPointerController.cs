@@ -1,5 +1,6 @@
 ﻿using Microsoft.Kinect;
 using Microsoft.Kinect.Toolkit.Interaction;
+using System.Linq;
 using System;
 
 namespace Kinect.Pointers
@@ -12,6 +13,7 @@ namespace Kinect.Pointers
         private IInteractionClient interactionClient;
         private InteractionStream interactionStream;
         private int trackingId;
+        private Skeleton[] skeletons = new Skeleton[0];
 
         /// <summary>
         /// Creates a new pointer controller instance.
@@ -62,7 +64,7 @@ namespace Kinect.Pointers
                     return;
                 }
 
-                Skeleton[] skeletons = new Skeleton[skeletonFrame.SkeletonArrayLength];
+                skeletons = new Skeleton[skeletonFrame.SkeletonArrayLength];
                 skeletonFrame.CopySkeletonDataTo(skeletons);
                 interactionStream.ProcessSkeleton(skeletons, accelerometerInfo, skeletonFrame.Timestamp);
             }
@@ -99,22 +101,36 @@ namespace Kinect.Pointers
                 // Tracked user
                 if (user.SkeletonTrackingId == this.trackingId)
                 {
-                    // Left hand data.
-                    KinectPointerHand leftHand = new KinectPointerHand();
-                    leftHand.X = user.HandPointers[0].X;
-                    leftHand.Y = user.HandPointers[0].Y;
-                    leftHand.HandEventType = user.HandPointers[0].HandEventType;
+                    // Check if left hand is correctly positioned.
+                    Skeleton currentSkeleton = skeletons.FirstOrDefault(s => s.TrackingId == this.trackingId);
+                    if (currentSkeleton != null)
+                    {
+                        // Left shoulder should be right of the left elbow.
+                        if (currentSkeleton.Joints[JointType.ShoulderLeft].Position.X > currentSkeleton.Joints[JointType.ElbowLeft].Position.X)
+                        {
+                            // Left hand should be above left elbow.
+                            if (currentSkeleton.Joints[JointType.HandLeft].Position.Y > currentSkeleton.Joints[JointType.ElbowLeft].Position.Y)
+                            {
 
-                    // Right hand data.
-                    KinectPointerHand rightHand = new KinectPointerHand();
-                    rightHand.X = user.HandPointers[1].X;
-                    rightHand.Y = user.HandPointers[1].Y;
-                    rightHand.HandEventType = user.HandPointers[1].HandEventType;
+                                // Left hand data.
+                                KinectPointerHand leftHand = new KinectPointerHand();
+                                leftHand.X = user.HandPointers[0].X;
+                                leftHand.Y = user.HandPointers[0].Y;
+                                leftHand.HandEventType = user.HandPointers[0].HandEventType;
 
-                    // Create and trigger event.
-                    KinectPointerEventArgs args = new KinectPointerEventArgs(this.trackingId, leftHand, rightHand);
-                    this.KinectPointerMoved(this, args);
-                    return;
+                                // Right hand data.
+                                KinectPointerHand rightHand = new KinectPointerHand();
+                                rightHand.X = user.HandPointers[1].X;
+                                rightHand.Y = user.HandPointers[1].Y;
+                                rightHand.HandEventType = user.HandPointers[1].HandEventType;
+
+                                // Create and trigger event.
+                                KinectPointerEventArgs args = new KinectPointerEventArgs(this.trackingId, leftHand, rightHand);
+                                this.KinectPointerMoved(this, args);
+                                return;
+                            }
+                        }
+                    }
                 }
             }
         }

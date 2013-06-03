@@ -194,7 +194,12 @@ namespace KinectGestureDemo
                         Canvas.SetLeft(this.MovableRectangle, 326);
                         Canvas.SetTop(this.MovableRectangle, 236);
                         break;
-
+                    case KinectGestureType.SwipeBottomToTop:
+                        Console.WriteLine("Swype Bottom to Top");
+                        break;
+                    case KinectGestureType.SwipeTopToBottom:
+                        Console.WriteLine("Swype Top to Bottom");
+                        break;
                     default:
                         break;
                 }
@@ -262,6 +267,8 @@ namespace KinectGestureDemo
             this.sensorController.Gestures.AddGesture(new KinectGestureWaveLeftHand());
             this.sensorController.Gestures.AddGesture(new KinectGestureSwipeRightToLeft());
             this.sensorController.Gestures.AddGesture(new KinectGestureSwipeLeftToRight());
+            this.sensorController.Gestures.AddGesture(new KinectGestureSwipeBottomToTop());
+            this.sensorController.Gestures.AddGesture(new KinectGestureSwipeTopToBottom());
             this.sensorController.Gestures.AddGesture(new KinectGestureCircleRightHand());
             this.sensorController.Gestures.AddGesture(new KinectGestureCircleLeftHand());
             this.sensorController.Gestures.KinectGestureRecognized += new EventHandler<KinectGestureEventArgs>(GestureRegognized);
